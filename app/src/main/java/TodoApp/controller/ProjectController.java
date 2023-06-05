@@ -91,6 +91,7 @@ public class ProjectController {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 project = new Project();
+                project.setId(resultSet.getInt("ID"));
                 project.setName(resultSet.getString("NAME"));
                 project.setDescription(resultSet.getString("DESCRIPTION"));
                 project.setCreatedAt(resultSet.getDate("CREATED_AT"));

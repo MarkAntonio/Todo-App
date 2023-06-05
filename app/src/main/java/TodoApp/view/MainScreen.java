@@ -4,6 +4,22 @@
  */
 package TodoApp.view;
 
+import TodoApp.controller.ProjectController;
+import TodoApp.controller.TaskController;
+import TodoApp.model.Project;
+import TodoApp.model.Task;
+import TodoApp.util.TaskTableModel;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author marco
@@ -13,8 +29,51 @@ public class MainScreen extends javax.swing.JFrame {
     /**
      * Creates new form MainScreen
      */
+    ProjectController projectController;
+    TaskController taskController;
+    DefaultListModel projectsModel; // O JList precisa dele
+    TaskTableModel taskTableModel;
+
     public MainScreen() {
         initComponents();
+        decorateTableTasks();
+
+        initDataController();
+        initComponentsModel();
+    }
+
+    public void initDataController() {
+        projectController = new ProjectController();
+        taskController = new TaskController();
+    }
+
+    public void initComponentsModel() {
+        projectsModel = new DefaultListModel();
+        loadProjects();
+
+        taskTableModel = new TaskTableModel();
+        tasksJTable.setModel(taskTableModel);
+        if (!projectsModel.isEmpty()) {
+            projectsJList.setSelectedIndex(0);
+            Project project = (Project) projectsModel.get(0);
+            loadTasks(project.getId());
+        }
+    }
+
+    public void loadTasks(int idProject) {
+        List<Task> tasks = taskController.getAll(idProject);
+        taskTableModel.setTasks(tasks);
+        showTasksJTable(!tasks.isEmpty());
+    }
+
+    public void loadProjects() {
+        List<Project> projects = projectController.getAll();
+        projectsModel.clear();
+
+        for (Project project : projects) {
+            projectsModel.addElement(project);
+        }
+        projectsJList.setModel(projectsModel);
     }
 
     /**
@@ -26,62 +85,404 @@ public class MainScreen extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        emptyJPanel = new javax.swing.JPanel();
+        EmptyIconJPanel = new javax.swing.JLabel();
+        EmptyTitleJPanel = new javax.swing.JLabel();
+        EmptySubtitleJPanel = new javax.swing.JLabel();
+        todoAppHeaderJPanel = new javax.swing.JPanel();
+        headerTitleJLabel = new javax.swing.JLabel();
+        headerSubtitleJLabel = new javax.swing.JLabel();
+        headerIconJLabel = new javax.swing.JLabel();
+        projectsHeaderJPanel = new javax.swing.JPanel();
+        projectsTitleJLabel = new javax.swing.JLabel();
+        projectsIconJLabel = new javax.swing.JLabel();
+        tasksHeaderJPanel = new javax.swing.JPanel();
+        tasksTitle = new javax.swing.JLabel();
+        tasksIconJLabel = new javax.swing.JLabel();
+        projectsColumnJPanel = new javax.swing.JPanel();
+        jScrollPaneProjects = new javax.swing.JScrollPane();
+        projectsJList = new javax.swing.JList<>();
+        tasksJPanel = new javax.swing.JPanel();
+        tasksJScrollPane = new javax.swing.JScrollPane();
+        tasksJTable = new javax.swing.JTable();
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        emptyJPanel.setBackground(java.awt.Color.white);
+
+        EmptyIconJPanel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        EmptyIconJPanel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lists.png"))); // NOI18N
+
+        EmptyTitleJPanel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        EmptyTitleJPanel.setForeground(new java.awt.Color(139, 45, 186));
+        EmptyTitleJPanel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        EmptyTitleJPanel.setText("No tasks around here...");
+
+        EmptySubtitleJPanel.setForeground(new java.awt.Color(102, 102, 102));
+        EmptySubtitleJPanel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        EmptySubtitleJPanel.setText("Click on the button \"+\" for adding a new task");
+
+        javax.swing.GroupLayout emptyJPanelLayout = new javax.swing.GroupLayout(emptyJPanel);
+        emptyJPanel.setLayout(emptyJPanelLayout);
+        emptyJPanelLayout.setHorizontalGroup(
+            emptyJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(EmptyTitleJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+            .addComponent(EmptyIconJPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, emptyJPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(EmptySubtitleJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        emptyJPanelLayout.setVerticalGroup(
+            emptyJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(emptyJPanelLayout.createSequentialGroup()
+                .addGap(74, 74, 74)
+                .addComponent(EmptyIconJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(EmptyTitleJPanel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(EmptySubtitleJPanel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(229, 229, 229));
+        setLocation(new java.awt.Point(0, 0));
+        setMinimumSize(new java.awt.Dimension(800, 600));
 
-        jPanel1.setBackground(new java.awt.Color(139, 45, 186));
+        todoAppHeaderJPanel.setBackground(new java.awt.Color(139, 45, 186));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/tick.png"))); // NOI18N
-        jLabel1.setText(" Todo App");
+        headerTitleJLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        headerTitleJLabel.setForeground(new java.awt.Color(255, 255, 255));
+        headerTitleJLabel.setText(" Todo App");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(229, 204, 255));
-        jLabel2.setText("Writes down everything, forgets nothing!");
+        headerSubtitleJLabel.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        headerSubtitleJLabel.setForeground(new java.awt.Color(229, 204, 255));
+        headerSubtitleJLabel.setText("Writes down everything, forgets nothing!");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(jLabel2)))
-                .addContainerGap(275, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
+        headerIconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/tick.png"))); // NOI18N
+
+        javax.swing.GroupLayout todoAppHeaderJPanelLayout = new javax.swing.GroupLayout(todoAppHeaderJPanel);
+        todoAppHeaderJPanel.setLayout(todoAppHeaderJPanelLayout);
+        todoAppHeaderJPanelLayout.setHorizontalGroup(
+            todoAppHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(todoAppHeaderJPanelLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(headerIconJLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addGroup(todoAppHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(headerTitleJLabel)
+                    .addComponent(headerSubtitleJLabel))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+        todoAppHeaderJPanelLayout.setVerticalGroup(
+            todoAppHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(todoAppHeaderJPanelLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(todoAppHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(headerIconJLabel)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, todoAppHeaderJPanelLayout.createSequentialGroup()
+                        .addComponent(headerTitleJLabel)
+                        .addGap(2, 2, 2)
+                        .addComponent(headerSubtitleJLabel)
+                        .addGap(8, 8, 8)))
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+
+        projectsHeaderJPanel.setBackground(new java.awt.Color(255, 255, 255));
+
+        projectsTitleJLabel.setBackground(new java.awt.Color(139, 45, 186));
+        projectsTitleJLabel.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        projectsTitleJLabel.setForeground(new java.awt.Color(139, 45, 186));
+        projectsTitleJLabel.setText("Projects");
+
+        projectsIconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/add.png"))); // NOI18N
+        projectsIconJLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                projectsIconJLabelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                projectsIconJLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                projectsIconJLabelMouseExited(evt);
+            }
+        });
+
+        javax.swing.GroupLayout projectsHeaderJPanelLayout = new javax.swing.GroupLayout(projectsHeaderJPanel);
+        projectsHeaderJPanel.setLayout(projectsHeaderJPanelLayout);
+        projectsHeaderJPanelLayout.setHorizontalGroup(
+            projectsHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(projectsHeaderJPanelLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(projectsTitleJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(projectsIconJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        projectsHeaderJPanelLayout.setVerticalGroup(
+            projectsHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(projectsHeaderJPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(projectsHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(projectsIconJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                    .addComponent(projectsTitleJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        tasksHeaderJPanel.setBackground(java.awt.Color.white);
+
+        tasksTitle.setBackground(new java.awt.Color(139, 45, 186));
+        tasksTitle.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        tasksTitle.setForeground(new java.awt.Color(139, 45, 186));
+        tasksTitle.setText("Tasks");
+
+        tasksIconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/add.png"))); // NOI18N
+        tasksIconJLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tasksIconJLabelMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                tasksIconJLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                tasksIconJLabelMouseExited(evt);
+            }
+        });
+
+        javax.swing.GroupLayout tasksHeaderJPanelLayout = new javax.swing.GroupLayout(tasksHeaderJPanel);
+        tasksHeaderJPanel.setLayout(tasksHeaderJPanelLayout);
+        tasksHeaderJPanelLayout.setHorizontalGroup(
+            tasksHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(tasksHeaderJPanelLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(tasksTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(tasksIconJLabel)
+                .addContainerGap())
+        );
+        tasksHeaderJPanelLayout.setVerticalGroup(
+            tasksHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tasksHeaderJPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(tasksHeaderJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tasksTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tasksIconJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        projectsColumnJPanel.setBackground(java.awt.Color.white);
+        projectsColumnJPanel.setForeground(java.awt.Color.white);
+
+        jScrollPaneProjects.setBorder(null);
+
+        projectsJList.setBorder(null);
+        projectsJList.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        projectsJList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        projectsJList.setFixedCellHeight(50);
+        projectsJList.setSelectionBackground(new java.awt.Color(200, 171, 235));
+        projectsJList.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        projectsJList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                projectsJListMouseClicked(evt);
+            }
+        });
+        jScrollPaneProjects.setViewportView(projectsJList);
+
+        javax.swing.GroupLayout projectsColumnJPanelLayout = new javax.swing.GroupLayout(projectsColumnJPanel);
+        projectsColumnJPanel.setLayout(projectsColumnJPanelLayout);
+        projectsColumnJPanelLayout.setHorizontalGroup(
+            projectsColumnJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(projectsColumnJPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPaneProjects, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        projectsColumnJPanelLayout.setVerticalGroup(
+            projectsColumnJPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(projectsColumnJPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPaneProjects)
+                .addContainerGap())
+        );
+
+        tasksJPanel.setBackground(java.awt.Color.white);
+        tasksJPanel.setLayout(new java.awt.BorderLayout());
+
+        tasksJTable.setBackground(java.awt.Color.white);
+        tasksJTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tasksJTable.setForeground(new java.awt.Color(0, 0, 0));
+        tasksJTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Name", "Description", "Deadline", "Task completed"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tasksJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
+        tasksJTable.setRowHeight(50);
+        tasksJTable.setSelectionBackground(new java.awt.Color(200, 171, 235));
+        tasksJTable.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tasksJTable.setShowHorizontalLines(true);
+        tasksJTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tasksJTableMouseClicked(evt);
+            }
+        });
+        tasksJScrollPane.setViewportView(tasksJTable);
+
+        tasksJPanel.add(tasksJScrollPane, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(todoAppHeaderJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(projectsHeaderJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(projectsColumnJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tasksHeaderJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tasksJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 231, Short.MAX_VALUE))
+                .addComponent(todoAppHeaderJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(projectsHeaderJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tasksHeaderJPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(projectsColumnJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tasksJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void projectsIconJLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectsIconJLabelMouseClicked
+        // TODO add your handling code here:
+        ProjectDialogScreen projectDialogScreen = new ProjectDialogScreen(this, rootPaneCheckingEnabled);
+        projectDialogScreen.setVisible(true);
+        projectDialogScreen.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                loadProjects();
+            }
+
+        });
+
+
+    }//GEN-LAST:event_projectsIconJLabelMouseClicked
+
+    private void tasksIconJLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tasksIconJLabelMouseClicked
+        TaskDialogScreen taskDialogScreen = new TaskDialogScreen(this, rootPaneCheckingEnabled);
+        taskDialogScreen.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                int projectIndex = projectsJList.getSelectedIndex();
+                Project project = (Project) projectsModel.get(projectIndex);
+                loadTasks(project.getId());
+            }
+
+        });
+        int projectIndex = projectsJList.getSelectedIndex();
+        Project project = (Project) projectsModel.get(projectIndex);
+        taskDialogScreen.setProject(project);
+        taskDialogScreen.setVisible(true);
+    }//GEN-LAST:event_tasksIconJLabelMouseClicked
+
+    private void tasksJTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tasksJTableMouseClicked
+        //Pegando o index da linha que eu cliquei na table
+        int rowIndex = tasksJTable.rowAtPoint(evt.getPoint());
+        //Pegando o index da coluna que eu cliquei na table (pois a coluna pode ser: completed, delete ou edit)
+        int columnIndex = tasksJTable.columnAtPoint(evt.getPoint());
+        Task task;
+        switch (columnIndex) {
+            case 4:
+                //Estou pegando a task pelo index da task que está no task table
+                //na linha rowIndex
+                task = taskTableModel.getTasks().get(rowIndex);
+                taskController.update(task);
+                break;
+            case 5:
+                task = taskTableModel.getTasks().get(rowIndex);
+                try {
+                    // Aqui eu removo a task do banco de dados pelo id 
+                    taskController.removeById(task.getId());
+                    //Aqui eu removo a tasks da lista de task model
+                    taskTableModel.getTasks().remove(task);
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                //Pego o index do projeto que está selecionado no projectsJList
+                int projectIndex = projectsJList.getSelectedIndex();
+                //Recupero a lita de projetos do banco de dados usando o 
+                //controller e somente o projeto com o index específico
+                Project project = projectController.getAll().get(projectIndex);
+                //Recarrego a lista de tasks do projeto com o id específico na tasksTableModel
+                loadTasks(project.getId());
+                break;  
+        }
+    }//GEN-LAST:event_tasksJTableMouseClicked
+
+    private void projectsJListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectsJListMouseClicked
+        int projectIndex = projectsJList.getSelectedIndex();
+        Project project = (Project) projectsModel.get(projectIndex);
+        loadTasks(project.getId());
+    }//GEN-LAST:event_projectsJListMouseClicked
+
+    private void tasksIconJLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tasksIconJLabelMouseEntered
+        tasksIconJLabel.setIcon(new ImageIcon(getClass().getResource("/addHI.png")));
+    }//GEN-LAST:event_tasksIconJLabelMouseEntered
+
+    private void tasksIconJLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tasksIconJLabelMouseExited
+        tasksIconJLabel.setIcon(new ImageIcon(getClass().getResource("/add.png")));
+    }//GEN-LAST:event_tasksIconJLabelMouseExited
+
+    private void projectsIconJLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectsIconJLabelMouseEntered
+        projectsIconJLabel.setIcon(new ImageIcon(getClass().getResource("/addHI.png")));
+    }//GEN-LAST:event_projectsIconJLabelMouseEntered
+
+    private void projectsIconJLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectsIconJLabelMouseExited
+        projectsIconJLabel.setIcon(new ImageIcon(getClass().getResource("/add.png")));
+    }//GEN-LAST:event_projectsIconJLabelMouseExited
 
     /**
      * @param args the command line arguments
@@ -94,7 +495,7 @@ public class MainScreen extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Java swing".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -119,8 +520,59 @@ public class MainScreen extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel EmptyIconJPanel;
+    private javax.swing.JLabel EmptySubtitleJPanel;
+    private javax.swing.JLabel EmptyTitleJPanel;
+    private javax.swing.JPanel emptyJPanel;
+    private javax.swing.JLabel headerIconJLabel;
+    private javax.swing.JLabel headerSubtitleJLabel;
+    private javax.swing.JLabel headerTitleJLabel;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPaneProjects;
+    private javax.swing.JPanel projectsColumnJPanel;
+    private javax.swing.JPanel projectsHeaderJPanel;
+    private javax.swing.JLabel projectsIconJLabel;
+    private javax.swing.JList<String> projectsJList;
+    private javax.swing.JLabel projectsTitleJLabel;
+    private javax.swing.JPanel tasksHeaderJPanel;
+    private javax.swing.JLabel tasksIconJLabel;
+    private javax.swing.JPanel tasksJPanel;
+    private javax.swing.JScrollPane tasksJScrollPane;
+    private javax.swing.JTable tasksJTable;
+    private javax.swing.JLabel tasksTitle;
+    private javax.swing.JPanel todoAppHeaderJPanel;
     // End of variables declaration//GEN-END:variables
+
+    public void decorateTableTasks() {
+        // Customizing the tasks table header
+        tasksJTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tasksJTable.getTableHeader().setBackground(new Color(139, 45, 186));
+        tasksJTable.getTableHeader().setForeground(Color.WHITE);
+        // Enabeling the columns sort
+        tasksJTable.setAutoCreateRowSorter(true);
+    }
+
+    public void showTasksJTable(boolean hasTask) {
+        if (hasTask) {
+            if (emptyJPanel.isVisible()) {
+                emptyJPanel.setVisible(false);
+                tasksJPanel.remove(emptyJPanel);
+            }
+            tasksJPanel.add(tasksJScrollPane);
+            tasksJScrollPane.setVisible(true);
+            tasksJScrollPane.setSize(tasksJPanel.getWidth(), tasksJPanel.getHeight());
+        } else {
+            if (tasksJScrollPane.isVisible()) {
+                tasksJScrollPane.setVisible(false);
+                tasksJPanel.remove(tasksJScrollPane);
+            }
+            tasksJPanel.add(emptyJPanel);
+            emptyJPanel.setVisible(true);
+            emptyJPanel.setSize(tasksJPanel.getWidth(), tasksJPanel.getHeight());
+        }
+        tasksJPanel.repaint();
+        tasksJPanel.validate();
+        revalidate();
+    }
+
 }
