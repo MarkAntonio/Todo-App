@@ -9,6 +9,7 @@ import java.util.List;
 
 import TodoApp.model.Project;
 import TodoApp.util.ConnectionFactory;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class ProjectController {
 
@@ -25,7 +26,12 @@ public class ProjectController {
             statement.setDate(3, new Date(project.getCreatedAt().getTime()));
             statement.setDate(4, new Date(project.getUpdatedAt().getTime()));
             statement.execute();
-        } catch (Exception e) {
+        } 
+        catch (SQLIntegrityConstraintViolationException e1) {
+            e1.printStackTrace();
+            throw new RuntimeException("Erro ao salvar a projeto: o valor name não pode ser vazio");
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Erro ao salvar projeto: " + e);
         } finally {

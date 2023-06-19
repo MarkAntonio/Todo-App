@@ -10,7 +10,10 @@ import TodoApp.model.Task;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
@@ -24,7 +27,22 @@ public class TaskDialogScreen extends javax.swing.JDialog {
     TaskController taskController;
     Project project;
 
-  
+    public JTextArea getTasksContentNotesJTextArea() {
+        return tasksContentNotesJTextArea;
+    }
+
+    public JTextArea getTasksContentDescriptionjTextArea() {
+        return tasksContentDescriptionjTextArea;
+    }
+
+    public JFormattedTextField getTasksContentDeadlinejFormattedTextField1() {
+        return tasksContentDeadlinejFormattedTextField1;
+    }
+
+    public JTextField getTasksContentNameJTextField() {
+        return tasksContentNameJTextField;
+    }
+ 
     
     public TaskDialogScreen(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -49,11 +67,11 @@ public class TaskDialogScreen extends javax.swing.JDialog {
         tasksContentNameJTextField = new javax.swing.JTextField();
         tasksContentDescriptionJLabel = new javax.swing.JLabel();
         tasksContentjScrollPane = new javax.swing.JScrollPane();
-        tasksContectDescriptionjTextArea = new javax.swing.JTextArea();
+        tasksContentDescriptionjTextArea = new javax.swing.JTextArea();
         tasksContentDeadlineJPanel = new javax.swing.JLabel();
         tasksContentNotesJPanel = new javax.swing.JLabel();
         tasksContentjScrollPane2 = new javax.swing.JScrollPane();
-        TasksContentNotesJTextArea = new javax.swing.JTextArea();
+        tasksContentNotesJTextArea = new javax.swing.JTextArea();
         tasksContentDeadlinejFormattedTextField1 = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -109,9 +127,9 @@ public class TaskDialogScreen extends javax.swing.JDialog {
         tasksContentDescriptionJLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tasksContentDescriptionJLabel.setText("Description");
 
-        tasksContectDescriptionjTextArea.setColumns(20);
-        tasksContectDescriptionjTextArea.setRows(5);
-        tasksContentjScrollPane.setViewportView(tasksContectDescriptionjTextArea);
+        tasksContentDescriptionjTextArea.setColumns(20);
+        tasksContentDescriptionjTextArea.setRows(5);
+        tasksContentjScrollPane.setViewportView(tasksContentDescriptionjTextArea);
 
         tasksContentDeadlineJPanel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tasksContentDeadlineJPanel.setText("Deadline");
@@ -119,9 +137,9 @@ public class TaskDialogScreen extends javax.swing.JDialog {
         tasksContentNotesJPanel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tasksContentNotesJPanel.setText("Notes");
 
-        TasksContentNotesJTextArea.setColumns(20);
-        TasksContentNotesJTextArea.setRows(5);
-        tasksContentjScrollPane2.setViewportView(TasksContentNotesJTextArea);
+        tasksContentNotesJTextArea.setColumns(20);
+        tasksContentNotesJTextArea.setRows(5);
+        tasksContentjScrollPane2.setViewportView(tasksContentNotesJTextArea);
 
         tasksContentDeadlinejFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
         tasksContentDeadlinejFormattedTextField1.addActionListener(new java.awt.event.ActionListener() {
@@ -211,20 +229,23 @@ public class TaskDialogScreen extends javax.swing.JDialog {
             //o nome não pode ser null e quando eu não digito nada ele manda uma string vazia.
             // por isso que eu transformo em null caso seja vazia
             task.setName(!text.equals("") ? text : null); 
-            task.setDescription(tasksContectDescriptionjTextArea.getText());
+            task.setDescription(tasksContentDescriptionjTextArea.getText());
             task.setCompleted(false);
             text = tasksContentDeadlinejFormattedTextField1.getText();
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             task.setDeadLine(!text.replace("/", "").equals("") ? dateFormat.parse(text) : null);
 
-            task.setNotes(TasksContentNotesJTextArea.getText());
+            task.setNotes(tasksContentNotesJTextArea.getText());
             taskController.save(task);
             JOptionPane.showMessageDialog(rootPane, "The task was succesfully created");
+            this.dispose();
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(rootPane, e.getMessage());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, e.getMessage());
         }
-        this.dispose();
+        
     }//GEN-LAST:event_tasksHeaderIconJLabelMouseClicked
     
       public void setProject(Project project) {
@@ -274,15 +295,15 @@ public class TaskDialogScreen extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea TasksContentNotesJTextArea;
-    private javax.swing.JTextArea tasksContectDescriptionjTextArea;
     private javax.swing.JLabel tasksContentDeadlineJPanel;
     private javax.swing.JFormattedTextField tasksContentDeadlinejFormattedTextField1;
     private javax.swing.JLabel tasksContentDescriptionJLabel;
+    private javax.swing.JTextArea tasksContentDescriptionjTextArea;
     private javax.swing.JPanel tasksContentJPanel;
     private javax.swing.JLabel tasksContentNameJPanel;
     private javax.swing.JTextField tasksContentNameJTextField;
     private javax.swing.JLabel tasksContentNotesJPanel;
+    private javax.swing.JTextArea tasksContentNotesJTextArea;
     private javax.swing.JScrollPane tasksContentjScrollPane;
     private javax.swing.JScrollPane tasksContentjScrollPane2;
     private javax.swing.JLabel tasksHeaderIconJLabel;

@@ -8,17 +8,21 @@ import TodoApp.controller.ProjectController;
 import TodoApp.controller.TaskController;
 import TodoApp.model.Project;
 import TodoApp.model.Task;
+import TodoApp.util.ButtonColumnCellRenderer;
+import TodoApp.util.DeadlineColumnCellRenderer;
 import TodoApp.util.TaskTableModel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -33,13 +37,16 @@ public class MainScreen extends javax.swing.JFrame {
     TaskController taskController;
     DefaultListModel projectsModel; // O JList precisa dele
     TaskTableModel taskTableModel;
+    TaskDialogScreen taskDialogScreen;
+    ProjectDialogScreen projectDialogScreen;
 
     public MainScreen() {
         initComponents();
-        decorateTableTasks();
 
         initDataController();
         initComponentsModel();
+        
+        decorateTableTasks();
     }
 
     public void initDataController() {
@@ -398,7 +405,7 @@ public class MainScreen extends javax.swing.JFrame {
 
     private void projectsIconJLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_projectsIconJLabelMouseClicked
         // TODO add your handling code here:
-        ProjectDialogScreen projectDialogScreen = new ProjectDialogScreen(this, rootPaneCheckingEnabled);
+        projectDialogScreen = new ProjectDialogScreen(this, rootPaneCheckingEnabled);
         projectDialogScreen.setVisible(true);
         projectDialogScreen.addWindowListener(new WindowAdapter() {
             @Override
@@ -412,7 +419,7 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_projectsIconJLabelMouseClicked
 
     private void tasksIconJLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tasksIconJLabelMouseClicked
-        TaskDialogScreen taskDialogScreen = new TaskDialogScreen(this, rootPaneCheckingEnabled);
+        taskDialogScreen = new TaskDialogScreen(this, rootPaneCheckingEnabled);
         taskDialogScreen.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -435,30 +442,46 @@ public class MainScreen extends javax.swing.JFrame {
         int columnIndex = tasksJTable.columnAtPoint(evt.getPoint());
         Task task;
         switch (columnIndex) {
-            case 4:
+            case 4: // se for a coluna 4, ela se refere ao checkbox de completed
                 //Estou pegando a task pelo index da task que está no task table
                 //na linha rowIndex
                 task = taskTableModel.getTasks().get(rowIndex);
                 taskController.update(task);
                 break;
-            case 5:
+            case 5:// se for a coluna 5, ela se refere ao botão editar
                 task = taskTableModel.getTasks().get(rowIndex);
-                try {
-                    // Aqui eu removo a task do banco de dados pelo id 
-                    taskController.removeById(task.getId());
-                    //Aqui eu removo a tasks da lista de task model
-                    taskTableModel.getTasks().remove(task);
-                } catch (SQLException ex) {
-                    Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                taskDialogScreen = new TaskDialogScreen(this, rootPaneCheckingEnabled);
+                
+                taskDialogScreen.getTasksContentNameJTextField().setText(task.getName());
+                taskDialogScreen.getTasksContentDescriptionjTextArea().setText(task.getDescription());
+                String deadline = new SimpleDateFormat("dd/MM/yyyy").format(task.getDeadLine()); 
+                taskDialogScreen.getTasksContentDeadlinejFormattedTextField1().setText(deadline);
+                taskDialogScreen.getTasksContentNotesJTextArea().setText(task.getNotes());
+                // se eu fizer assim ele vai criar um novo objeto... eu tenho que dar um jeito
+                // de ele atualizar com o update no controller ou ver o que o rapaz vai fazer.
+                //prox aula 18.A
+                
+            case 6:// se for a coluna 4, ela se refere ao botão remover
+                int opt = JOptionPane.showConfirmDialog(rootPane, "Are you shure?", null, JOptionPane.YES_NO_OPTION);
+                if (opt == 0) {
+                    task = taskTableModel.getTasks().get(rowIndex);
+                    try {
+                        // Aqui eu removo a task do banco de dados pelo id 
+                        taskController.removeById(task.getId());
+                        //Aqui eu removo a tasks da lista de task model
+                        taskTableModel.getTasks().remove(task);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(MainScreen.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    //Pego o index do projeto que está selecionado no projectsJList
+                    int projectIndex = projectsJList.getSelectedIndex();
+                    //Recupero a lita de projetos do banco de dados usando o 
+                    //controller e somente o projeto com o index específico
+                    Project project = projectController.getAll().get(projectIndex);
+                    //Recarrego a lista de tasks do projeto com o id específico na tasksTableModel
+                    loadTasks(project.getId());
+                    break;
                 }
-                //Pego o index do projeto que está selecionado no projectsJList
-                int projectIndex = projectsJList.getSelectedIndex();
-                //Recupero a lita de projetos do banco de dados usando o 
-                //controller e somente o projeto com o index específico
-                Project project = projectController.getAll().get(projectIndex);
-                //Recarrego a lista de tasks do projeto com o id específico na tasksTableModel
-                loadTasks(project.getId());
-                break;  
         }
     }//GEN-LAST:event_tasksJTableMouseClicked
 
@@ -550,6 +573,10 @@ public class MainScreen extends javax.swing.JFrame {
         tasksJTable.getTableHeader().setForeground(Color.WHITE);
         // Enabeling the columns sort
         tasksJTable.setAutoCreateRowSorter(true);
+        tasksJTable.getColumnModel().getColumn(3).setCellRenderer(new DeadlineColumnCellRenderer());
+        tasksJTable.getColumnModel().getColumn(5).setCellRenderer(new ButtonColumnCellRenderer("edit"));
+        tasksJTable.getColumnModel().getColumn(6).setCellRenderer(new ButtonColumnCellRenderer("delete"));
+
     }
 
     public void showTasksJTable(boolean hasTask) {

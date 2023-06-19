@@ -42,9 +42,14 @@ public class TaskController {
             statement.setDate(7, new Date(task.getCreatedAt().getTime()));
             statement.setDate(8, new Date(task.getUpdatedAt().getTime()));
             statement.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao salvar a tarefa: " + e.getMessage() + e);
+        } 
+        catch (NullPointerException e1) {
+            e1.printStackTrace();
+            throw new RuntimeException("Erro ao salvar a tarefa: os valores name e deadline não podem ser vazios");
+        }
+        catch (Exception e2) {
+            e2.printStackTrace();
+            throw new RuntimeException("Erro ao salvar a tarefa: " + e2.getMessage() + e2);
         } finally {
             ConnectionFactory.closeConnection(connection, statement);
         }
